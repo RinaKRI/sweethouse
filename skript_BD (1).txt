@@ -1,0 +1,263 @@
+**********************************************************
+
+скачать в питон
+psycopg2
+pyqt5
+pyqt5-tools
+
+**********************************************************
+-- baza.furnitura definition
+
+-- Drop table
+
+-- DROP TABLE baza.furnitura;
+
+CREATE TABLE baza.furnitura (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	"name" varchar NOT NULL,
+	"type" varchar NOT NULL,
+	shrina varchar NULL,
+	dlina varchar NULL,
+	ves varchar NULL,
+	price int4 NOT NULL,
+	CONSTRAINT furnitura_pk PRIMARY KEY (id)
+);
+
+
+-- baza.izdelie definition
+
+-- Drop table
+
+-- DROP TABLE baza.izdelie;
+
+CREATE TABLE baza.izdelie (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	"name" varchar NOT NULL,
+	shirina varchar NULL,
+	dlina varchar NULL,
+	"comment" varchar NULL,
+	CONSTRAINT izdelie_pk PRIMARY KEY (id)
+);
+
+
+-- baza.tkani definition
+
+-- Drop table
+
+-- DROP TABLE baza.tkani;
+
+CREATE TABLE baza.tkani (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	"name" varchar NOT NULL,
+	color varchar NULL,
+	risunok varchar NULL,
+	shirina varchar NULL,
+	dlina varchar NULL,
+	sostav varchar NULL,
+	price int4 NULL,
+	CONSTRAINT tkani_pk PRIMARY KEY (id)
+);
+
+
+-- baza.users definition
+
+-- Drop table
+
+-- DROP TABLE baza.users;
+
+CREATE TABLE baza.users (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	login varchar NOT NULL,
+	"password" varchar NOT NULL,
+	CONSTRAINT user_pk PRIMARY KEY (id)
+);
+
+
+-- baza.furnitura_izdeliy definition
+
+-- Drop table
+
+-- DROP TABLE baza.furnitura_izdeliy;
+
+CREATE TABLE baza.furnitura_izdeliy (
+	id_furnituri int4 NOT NULL,
+	id_izdeliy int4 NOT NULL,
+	"location" varchar NOT NULL,
+	shirina varchar NULL,
+	dlina varchar NULL,
+	povorot varchar NULL,
+	kol_vo int4 NOT NULL,
+	CONSTRAINT furnitura_izdeliy_fk FOREIGN KEY (id_furnituri) REFERENCES baza.furnitura(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT furnitura_izdeliy_fk_1 FOREIGN KEY (id_izdeliy) REFERENCES baza.izdelie(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- baza.sklad_furnitura definition
+
+-- Drop table
+
+-- DROP TABLE baza.sklad_furnitura;
+
+CREATE TABLE baza.sklad_furnitura (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	id_furnitura int4 NOT NULL,
+	kol_vo int4 NOT NULL,
+	CONSTRAINT sklad_furnityra_pk PRIMARY KEY (id),
+	CONSTRAINT sklad_furnitura_fk FOREIGN KEY (id_furnitura) REFERENCES baza.furnitura(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- baza.sklad_tkani definition
+
+-- Drop table
+
+-- DROP TABLE baza.sklad_tkani;
+
+CREATE TABLE baza.sklad_tkani (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	id_tkani int4 NOT NULL,
+	dlina varchar NULL,
+	CONSTRAINT newtable_pk PRIMARY KEY (id),
+	CONSTRAINT sklad_tkani_fk FOREIGN KEY (id_tkani) REFERENCES baza.tkani(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- baza.tkani_izdeliy definition
+
+-- Drop table
+
+-- DROP TABLE baza.tkani_izdeliy;
+
+CREATE TABLE baza.tkani_izdeliy (
+	id_tkani int4 NOT NULL,
+	id_izdeliy int4 NOT NULL,
+	CONSTRAINT tkani_izdeliy_fk FOREIGN KEY (id_izdeliy) REFERENCES baza.izdelie(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT tkani_tkani_fk FOREIGN KEY (id_tkani) REFERENCES baza.tkani(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- baza.zakaz definition
+
+-- Drop table
+
+-- DROP TABLE baza.zakaz;
+
+CREATE TABLE baza.zakaz (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE),
+	"date" timestamp NULL,
+	vipolnenie varchar NOT NULL,
+	zakazchik int4 NOT NULL,
+	manager int4 NOT NULL,
+	price int4 NOT NULL,
+	CONSTRAINT zakaz_pk PRIMARY KEY (id),
+	CONSTRAINT zakaz_fk FOREIGN KEY (zakazchik) REFERENCES baza.users(id),
+	CONSTRAINT zakaz_fk_1 FOREIGN KEY (manager) REFERENCES baza.users(id)
+);
+
+
+-- baza.zakaz_izdeliy definition
+
+-- Drop table
+
+-- DROP TABLE baza.zakaz_izdeliy;
+
+CREATE TABLE baza.zakaz_izdeliy (
+	id_izdeliy int4 NOT NULL,
+	id_zakaza int4 NOT NULL,
+	kol_vo int4 NOT NULL,
+	CONSTRAINT zakaz_izdeliy_fk FOREIGN KEY (id_izdeliy) REFERENCES baza.izdelie(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT zakaz_izdeliy_fk_1 FOREIGN KEY (id_zakaza) REFERENCES baza.zakaz(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+----------------------------------------------------------------
+
+ctrl+f baza = название БД
+изменить название схемы на БД
+
+----------------------------------------------------------------
+
+данные в экселе сравнить со столбцами в дбеавере
+
+----------------------------------------------------------------
+****************************************************************
+
+авторизация
+
+сделать макет в Qt designer
+
++++
+
+login, password - LineEdit
+Sign in (Авториз), Sign up (Зарегистр) - PushButton
+Авторизация, Зарегистрироваться - Label
+
++++
+
+window title изменить название окна
+пкм -- change style sheet -- 3 вкладка
+	color - цвет текста
+	background color - задний фон
+	border color - цвет обводки
+
++++
+
+для перевода в терминале ввести
+python -m PyQt5.uic.pyuic -x назвф.ui -o назвф.py
+
++++
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
++++
+
+код
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_AuthForm(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(400, 115)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.login_line = QtWidgets.QLineEdit(Form)
+        self.login_line.setObjectName("login_line")
+        self.verticalLayout.addWidget(self.login_line)
+        self.password_line = QtWidgets.QLineEdit(Form)
+        self.password_line.setObjectName("password_line")
+        self.verticalLayout.addWidget(self.password_line)
+        self.verticalLayout_2.addLayout(self.verticalLayout)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.auth_btn = QtWidgets.QPushButton(Form)
+        self.auth_btn.setObjectName("auth_btn")
+        self.horizontalLayout.addWidget(self.auth_btn)
+        self.reg_btn = QtWidgets.QPushButton(Form)
+        self.reg_btn.setObjectName("reg_btn")
+        self.horizontalLayout.addWidget(self.reg_btn)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.login_line.setPlaceholderText(_translate("Form", "Логин"))
+        self.password_line.setPlaceholderText(_translate("Form", "Пароль"))
+        self.auth_btn.setText(_translate("Form", "Авторизация"))
+        self.reg_btn.setText(_translate("Form", "Регистрация"))
+
++++
+
+видео про подключение к дб
+
+файлы:
+	config.py
+	main.py
+	requironments
+	екст с видео
