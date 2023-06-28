@@ -1,55 +1,68 @@
-import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
-from check_db import *
-from des import *
+import psycopg2
+from config import host, user, password, db_name
 
 
-class Interface(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.ui = Ui_Form()
-        self.ui.setupUi(self)
-
-        self.ui.pushButton.clicked.connect(self.reg) кнопка авторизации
-        self.ui.pushButton_2.clicked.connect(self.auth) кнопка регистрации
-        self.base_line_edit = [self.ui.lineEdit, self.ui.lineEdit_2] кнопки в которых содержатся логин и пароль
-
-        self.check_db = CheckThread()
-        self.check_db.mysignal.connect(self.signal_handler)
-
-
-    # Проверка правильности ввода
-    def check_input(funct):
-        def wrapper(self):
-            for line_edit in self.base_line_edit:
-                if len(line_edit.text()) == 0:
-                    return
-            funct(self)
-        return wrapper
-
-
-    # Обработчик сигналов
-    def signal_handler(self, value):
-        QtWidgets.QMessageBox.about(self, 'Оповещение', value)
-
-
-    @check_input
-    def auth(self):
-        name = self.ui.lineEdit.text()
-        passw = self.ui.lineEdit_2.text()
-        self.check_db.thr_login(name, passw)
-
-
-    @check_input
-    def reg(self):
-        name = self.ui.lineEdit.text()
-        passw = self.ui.lineEdit_2.text()
-        self.check_db.thr_register(name, passw)
-
-
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    mywin = Interface()
-    mywin.show()
-    sys.exit(app.exec_())
+try:
+    # connect to exist database
+    connection = psycopg2.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=db_name    
+    )
+    connection.autocommit = True
+    
+    # the cursor for perfoming database operations
+    # cursor = connection.cursor()
+    
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT version();"
+        )
+        
+        print(f"Server version: {cursor.fetchone()}")
+        
+    # create a new table
+    # with connection.cursor() as cursor:
+    #     cursor.execute(
+    #         """CREATE TABLE users(
+    #             id serial PRIMARY KEY,
+    #             first_name varchar(50) NOT NULL,
+    #             nick_name varchar(50) NOT NULL);"""
+    #     )
+        
+    #     # connection.commit()
+    #     print("[INFO] Table created successfully")
+        
+    # insert data into a table
+    # with connection.cursor() as cursor:
+    #     cursor.execute(
+    #         """INSERT INTO users (first_name, nick_name) VALUES
+    #         ('Oleg', 'barracuda');"""
+    #     )
+        
+    #     print("[INFO] Data was succefully inserted")
+        
+    # get data from a table
+    # with connection.cursor() as cursor:
+    #     cursor.execute(
+    #         """SELECT nick_name FROM users WHERE first_name = 'Oleg';"""
+    #     )
+        
+    #     print(cursor.fetchone())
+        
+    # delete a table
+    # with connection.cursor() as cursor:
+    #     cursor.execute(
+    #         """DROP TABLE users;"""
+    #     )
+        
+    #     print("[INFO] Table was deleted")
+    
+except Exception as _ex:
+    print("[INFO] Error while working with PostgreSQL", _ex)
+finally:
+    if connection:
+        # cursor.close()
+        connection.close()
+        print("[INFO] PostgreSQL connection closed")
